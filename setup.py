@@ -11,6 +11,7 @@ setup(name='py-merlin',
       url="https://github.com/blackbirdtech/merlin-python",
       packages=['merlin'],
       scripts=[],
+      test_suite='tests',
       install_requires=[
           # See requirements.txt
       ],
