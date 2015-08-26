@@ -13,14 +13,14 @@ class Search(Api):
         self.q = q
         self.start = start
         self.num = num
-        self.filters = filters
-        self.facets = facets
+        self.filter = filters
+        self.facet = facets
 
     def build(self):
         params = OrderedDict(q=self.q)
 
         # Sigh
-        for k in ('filters', 'facets', 'start', 'num'):
+        for k in ('filter', 'facet', 'start', 'num'):
             v = getattr(self, k)
             if isinstance(v, Builder):
                 v = v.build()
@@ -28,7 +28,7 @@ class Search(Api):
             if v is not None:
                 params[k] = v
 
-        return urljoin(self.PREFIX, "?%s" % urlencode(params))
+        return urljoin(self.PREFIX, "?%s" % urlencode(params, True))
 
     def process_results(self, raw):
         return SearchResults.parse(raw)
