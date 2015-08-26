@@ -22,10 +22,13 @@ class Search(Api):
         # Sigh
         for k in ('filter', 'facet', 'start', 'num'):
             v = getattr(self, k)
-            if isinstance(v, Builder):
-                v = v.build()
-
             if v is not None:
+                if not isinstance(v, (tuple, list)):
+                    v = [v]
+
+                v = [x.build() if isinstance(x, Builder) else x
+                        for x in v]
+
                 params[k] = v
 
         return urljoin(self.PREFIX, "?%s" % urlencode(params, True))

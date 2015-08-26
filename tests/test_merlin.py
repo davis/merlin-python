@@ -50,5 +50,29 @@ class MerlinTest(unittest.TestCase):
             enc("field=brand/type=enum/key=ponies/num=10/ex=foo,bar")
         )
 
+    def test_hist_facet(self):
+        s = Search(
+            q = "shirt", 
+            facets = F.hist("price", start=10, end=100, gap=5, key='prices')
+        )
+        self.assertEquals(s.build(), 
+            "search?q=shirt&facet=" + 
+            enc("field=price/type=hist/key=prices/range=[10:100:5]")
+        )
+
+    def test_multiple_facets(self):
+        s = Search(
+            q = "shirt", 
+            facets = [
+                F.enum('brand', num=10, key='top_brands'),
+                F.hist('price', start=0, end=100, gap=10)
+            ]
+        )
+        self.assertEquals(s.build(), 
+            "search?q=shirt" + 
+            '&facet=' + enc("field=brand/type=enum/key=top_brands/num=10") +
+            '&facet=' + enc("field=price/type=hist/range=[0:100:10]")
+        )
+
 if __name__ == '__main__':
     unittest.main()
