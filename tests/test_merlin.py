@@ -9,9 +9,6 @@ from merlin.search import Search
 
 class MerlinTest(unittest.TestCase):
 
-    def setUp(self):
-        pass
-
     def test_simple_search(self):
         s = Search(q="shirt")
         self.assertEquals(s.build(), "search?q=shirt")
@@ -184,6 +181,76 @@ class MerlinTest(unittest.TestCase):
 
         with self.assertRaises(AssertionError):
             Field(123)
+
+class EngineTest(unittest.TestCase):
+
+    def setUp(self):
+        self.engine = Merlin('blackbird', 'dev', 'agathon')
+
+    def test_simple_q(self):
+        s = Search(q='dress')
+        with self.engine(s) as r:
+            self.assertEquals(r.hits.numFound, 1)
+            self.assertEquals(r.hits[0]['id'], '111f49eacc7dbc9ab2df53f8ce52ec64')
+
+    def test_simple_q_fields(self):
+        s = Search(q='dress', fields=['images'])
+        with self.engine(s) as r:
+            keys_found = set()
+            for h in r.hits:
+                keys_found.update(h.keys())
+
+            self.assertEquals(len(keys_found), 1)
+            self.assert_('images' in keys_found, 
+                "field 'images' not in returned results")
+
+    def test_price_filter(self):
+        s = Search(q='', 
+            filter=NF.cnf(Field('price') > 150),
+            fields=['price']
+        )
+        with self.engine(s) as r:
+            self.assertEquals(r.hits.numFound, 1)
+            self.assertEquals(r.hits[0]['price'], '178.0 USD')
+    
+    def test_sort(self):
+        s = Search(q='',
+            sort = S.asc('price'),
+            fields= ['price']
+        )
+        with self.engine(s) as r:
+            self.assertEquals(r.hits.numFound, 5)
+            self.assertEquals(r.hits[0]['price'], '59.0 USD')
+            self.assertEquals(r.hits[-1]['price'], '178.0 USD')
+
+    def test_or_search(self):
+        s = Search(q='',
+            filter=NF.cnf(
+                Field('colors') == ('Red', 'Blue')
+            )
+        )
+        with self.engine(s) as r:
+            self.assertEquals(r.hits.numFound, 3)
+            for h in r.hits:
+                self.assertIn(h['colors'][0], set(['Red', 'Blue', 'red']))
+
+    def test_and_search(self):
+        s = Search(q='',
+            filter=NF.cnf(
+                (Field('colors') == 'Red') & (Field('price') < 178)
+            )
+        )
+        with self.engine(s) as r:
+            self.assertEquals(r.hits.numFound, 1)
+            self.assertEquals(r.hits[0]['brand'], 'Raoul')
+
+        s = Search(q='',
+            filter=NF.cnf(
+                (Field('colors') == 'Red') & (Field('price') <= 178)
+            )
+        )
+        with self.engine(s) as r:
+            self.assertEquals(r.hits.numFound, 2)
 
 if __name__ == '__main__':
     unittest.main()

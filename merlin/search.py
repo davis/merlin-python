@@ -20,8 +20,8 @@ class Search(Api):
             ToListF() >> MapF(BuildF)
         ),
         "sort": FieldType(
-            ForAllValidator(IsValidator(SortField)), 
-            MapF(BuildF) >> DelimF(',')
+            OneOrNValidator(IsValidator(SortField)),
+            ToListF() >> MapF(BuildF) >> DelimF(',')
         ), 
         "fields": FieldType(
             ForAllValidator(IsValidator(basestring)),

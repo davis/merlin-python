@@ -35,6 +35,9 @@ class DefaultEngine(Engine):
             else:
                 data = h.read()
 
+            if h.code != 200:
+                raise IOError("Bad response: %s" % data)
+
             return self.api.process_results(data)
 
     def __exit__(self, *args, **kwargs):
