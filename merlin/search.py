@@ -5,9 +5,20 @@ from collections import OrderedDict
 
 from .error import MerlinException
 from .common import Builder, Api
+from .utils import *
+from .sort import Sorter
 
 class Search(Api):
     PREFIX = "search"
+    FIELD_TYPES = {
+        "start": FieldType(PosIntValidator, IdentityF),
+        "num":   FieldType(PosIntValidator, IdentityF),
+        "facet": FieldType(
+            ForAllValidator(BuilderValidator) | BuilderValidator,
+            ToListF().andThen(MapF(BuildF))
+        ),
+        "sort": FieldType(IsValidator(Sorter), BuildF), 
+    }
 
     def __init__(self, q="", start=None, num=None, filters=None, 
                        facets=None, sort=None):
@@ -25,11 +36,10 @@ class Search(Api):
         for k in ('filter', 'facet', 'start', 'num', 'sort'):
             v = getattr(self, k)
             if v is not None:
-                if not isinstance(v, (tuple, list)):
-                    v = [v]
-
-                v = [x.build() if isinstance(x, Builder) else x
-                        for x in v]
+                ft = self.FIELD_TYPES.get(k)
+                if ft is not None:
+                    ft.validate(v)
+                    v = ft.format(v)
 
                 params[k] = v
 
