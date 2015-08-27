@@ -137,5 +137,36 @@ class MerlinTest(unittest.TestCase):
             '&filter=' + enc(r"exp=Price:[0:100]/type=dnf")
         )
 
+    def test_single_filter(self):
+        s = Search(
+            q='hoodie',
+            filter=NF.cnf(Field('price') <= 20)
+        )
+        self.assertEquals(s.build(), 
+            "search?q=hoodie" + 
+            '&filter=' + enc(r"exp=price:[:20]/type=cnf")
+        )
+
+    def test_lt_gt_error(self):
+        with self.assertRaises(NotImplementedError):
+            Field('price') < 10
+
+        with self.assertRaises(NotImplementedError):
+            Field('price') > 10
+
+    def test_needs_num(self):
+        with self.assertRaises(AssertionError):
+            Field('price') <= '10'
+
+        with self.assertRaises(AssertionError):
+            Field('price').between('a', 10)
+
+    def test_proper_fieldnames(self):
+        with self.assertRaises(AssertionError):
+            Field('')
+
+        with self.assertRaises(AssertionError):
+            Field(123)
+
 if __name__ == '__main__':
     unittest.main()

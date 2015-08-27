@@ -6,10 +6,18 @@ def assert_op(v, op):
 class Field(object):
 
     def __init__(self, field):
+        assert isinstance(field, basestring), "Field needs to be a string"
+        assert field, "Field needs to be a non-empty string"
         self.field = field
 
     def _new_op(self, op, v):
         return FilterSet(self.field, op, v)
+
+    def __lt__(self, v):
+        raise NotImplementedError("Fields only support '<='")
+
+    def __gt__(self, v):
+        raise NotImplementedError("Fields only support '>='")
 
     def __le__(self, v):
         assert_op(v, '<=')

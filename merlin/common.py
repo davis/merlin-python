@@ -26,7 +26,6 @@ class DefaultEngine(Engine):
 
     def __enter__(self):
         url = urlparse.urljoin(self.env.build_url(), self.api.build())
-        print url
         req = self.build_request(url)
 
         with closing(urllib2.urlopen(req, timeout=self.timeout)) as h:
