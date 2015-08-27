@@ -7,6 +7,7 @@ from .error import MerlinException
 from .common import Builder, Api
 from .utils import *
 from .sort import SortField
+from .filter import NF
 
 class Search(Api):
     PREFIX = "search"
@@ -15,24 +16,25 @@ class Search(Api):
         "num":   FieldType(PosIntValidator, IdentityF),
         "facet": FieldType(
             ForAllValidator(BuilderValidator) | BuilderValidator,
-            ToListF().andThen(MapF(BuildF))
+            ToListF() >> MapF(BuildF)
         ),
         "sort": FieldType(
             ForAllValidator(IsValidator(SortField)), 
-            MapF(BuildF).andThen(DelimF(','))
+            MapF(BuildF) >> DelimF(',')
         ), 
         "fields": FieldType(
             ForAllValidator(IsValidator(basestring)),
             DelimF(",")
-        )
+        ),
+        "filter": FieldType(IsValidator(NF), BuildF)
     }
 
-    def __init__(self, q="", start=None, num=None, filters=None, 
+    def __init__(self, q="", start=None, num=None, filter=None, 
                        facets=None, sort=None, fields=None):
         self.q = q
         self.start = start
         self.num = num
-        self.filter = filters
+        self.filter = filter
         self.facet = facets
         self.sort = sort
         self.fields = fields

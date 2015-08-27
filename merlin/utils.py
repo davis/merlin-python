@@ -9,6 +9,12 @@ class Formatter(object):
     def andThen(self, f2):
         return AndThenF(self, f2)
 
+    def __rshift__(self, next):
+        return self.andThen(next)
+
+    def __lshift__(self, next):
+        return next.andThen(self)
+
 class AndThenF(Formatter):
     def __init__(self, f1, f2):
         self.f1 = f1

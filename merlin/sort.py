@@ -13,6 +13,7 @@ class Desc(SortField):
         return '%s:desc' % self.field
 
 class Sort(object):
+
     @staticmethod
     def asc(field):
         return Asc(field)

@@ -3,6 +3,7 @@ from urllib import quote_plus as enc
 
 from merlin import Merlin
 from merlin.facet import Facet as F
+from merlin.filter import Field, NF
 from merlin.sort import Sort as S
 from merlin.search import Search
 
@@ -106,6 +107,18 @@ class MerlinTest(unittest.TestCase):
         self.assertEquals(s.build(), 
             "search?q=socks" + 
             '&fields=' + enc("one,two,three")
+        )
+
+    def test_fields(self):
+        s = Search(
+            q = "shoes",
+            filter=NF.cnf(
+                (Field('Color') == 'Red') & (Field('Color') != 'Blue')
+            )
+        )
+        self.assertEquals(s.build(), 
+            "search?q=shoes" + 
+            '&filter=' + enc(r"exp=Color:Red,Color:!Blue/type=cnf")
         )
 
 if __name__ == '__main__':
