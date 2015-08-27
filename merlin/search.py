@@ -64,11 +64,12 @@ class Search(Api):
         
 class SearchResults(object):
 
-    def __init__(self, q, num, start, hits):
+    def __init__(self, q, num, start, hits, facets):
         self.q = q
         self.num = num
         self.start = start
         self.hits = hits
+        self.facets = facets
 
     def __iter__(self):
         return iter(self.hits)
@@ -91,7 +92,8 @@ class SearchResults(object):
 
         results = data['results']
         hits = Hits(results['numfound'], results['hits'])
-        return cls(data['q'], data['num'], data['start'], hits)
+        facets = Facets(results['facets'])
+        return cls(data['q'], data['num'], data['start'], hits, facets)
 
     def __unicode__(self):
         return u"SearchResults(q='%s', numFound=%s)" % (self.q, self.hits.numFound)
@@ -111,3 +113,36 @@ class Hits(object):
 
     def __len__(self):
         return len(self.hits)
+
+class Facets(object):
+    def __init__(self, facets):
+        self.enums = self._build_enums(facets['enums'])
+        self.histograms = self._build_hists(facets['histograms'])
+        self.ranges = self._build_ranges(facets['ranges'])
+
+    def _build_enums(self, ens):
+        enums = {}
+        for fname, v in ens.iteritems():
+            enums[fname] = m = {}
+            for fs in v.get('enums', []):
+                m[f['term']] = f['count']
+
+        return enums
+
+    def _build_ranges(self, rngs):
+        ranges = {}
+        for fname, m in rngs.iteritems():
+            ranges[fname] = (m['min'], m['max'])
+
+        return ranges
+
+    def _build_hists(self, hsts):
+        hists = {}
+        for fname, v in hsts.iteritems():
+            hists[fname] = m = {}
+            for f in v.get('histograms', []):
+                to_v, from_v, count = f['to'], f['from'], f['count']
+                hists[(to_v, from_v)] = count
+
+        return hists
+

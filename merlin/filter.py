@@ -16,10 +16,12 @@ class Field(object):
         return FilterSet(self.field, op, v)
 
     def __lt__(self, v):
-        raise NotImplementedError("Fields only support '<='")
+        assert_op(v, '<')
+        return self._new_op('<', slice(None, v))
 
     def __gt__(self, v):
-        raise NotImplementedError("Fields only support '>='")
+        assert_op(v, '>')
+        return self._new_op('>', slice(v, None))
 
     def __le__(self, v):
         assert_op(v, '<=')
@@ -115,9 +117,9 @@ class FilterSet(Builder):
         return ''.join(ESCAPE_SET.get(c, c) for c in v)
 
     def __unicode__(self):
-        if self.op == '<=':
+        if self.op in ('<=', '<'):
             value = self.value.stop
-        elif self.op == '>=':
+        elif self.op ('>=', '>'):
             value = self.value.start
         elif self.op == 'in':
             value = '[%s:%s]' % (self.value.start, self.value.stop)
@@ -130,15 +132,18 @@ class FilterSet(Builder):
 
     def build(self):
         # Le sigh.  Wish Python had ADTs
-        if self.op in ('<=', '>=', 'in'):
+        if self.op in ('<=', '<', '>=', '>', 'in'):
+            lp, rp = '[', ']'
             if self.op == 'in':
                 start, stop = self.value.start, self.value.stop
-            elif self.op == '<=':
+            elif self.op in ('<=', '<'):
                 start, stop = '', self.value.stop
-            elif self.op == '>=':
+                rp = ')' if self.op == '<' else rp
+            elif self.op in ('>=', '>'):
                 start, stop = self.value.start, ''
+                lp = '(' if self.op == '>' else lp
 
-            return '%s:[%s:%s]' % (self.field, start, stop)
+            return '%s:%s%s:%s%s' % (self.field, lp, start, stop, rp)
 
         value = self._escape(self.value)
         if self.op == '!=':
