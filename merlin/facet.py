@@ -30,6 +30,10 @@ class Facet(Builder):
     def hist(*args, **kwargs):
         return HistFacet(*args, **kwargs)
 
+    @staticmethod
+    def range(*args, **kwargs):
+        return RangeFacet(*args, **kwargs)
+
 class EnumFacet(Facet):
     def __init__(self, field, num=15, key=None, exclude=None):
         super(EnumFacet, self).__init__('enum', field, key)
@@ -54,4 +58,8 @@ class HistFacet(Facet):
     def build(self):
         ps = OrderedDict(range='[%s:%s:%s]' % (self.start, self.end, self.gap))
         return self._build(ps)
+
+class RangeFacet(Facet):
+    def __init__(self, field, key=None):
+        super(RangeFacet, self).__init__('range', field, key)
 

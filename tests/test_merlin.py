@@ -3,6 +3,7 @@ from urllib import quote_plus as enc
 
 from merlin import Merlin
 from merlin.facet import Facet as F
+from merlin.sort import Sort as S
 from merlin.search import Search
 
 class MerlinTest(unittest.TestCase):
@@ -60,6 +61,16 @@ class MerlinTest(unittest.TestCase):
             enc("field=price/type=hist/key=prices/range=[10:100:5]")
         )
 
+    def test_range_facet(self):
+        s = Search(
+            q = "shirt", 
+            facets = F.range("price", key='prices')
+        )
+        self.assertEquals(s.build(), 
+            "search?q=shirt&facet=" + 
+            enc("field=price/type=range/key=prices")
+        )
+
     def test_multiple_facets(self):
         s = Search(
             q = "shirt", 
@@ -72,6 +83,16 @@ class MerlinTest(unittest.TestCase):
             "search?q=shirt" + 
             '&facet=' + enc("field=brand/type=enum/key=top_brands/num=10") +
             '&facet=' + enc("field=price/type=hist/range=[0:100:10]")
+        )
+
+    def test_sorting(self):
+        s = Search(
+            q = "pants", 
+            sort = S.desc('brand').asc('price')
+        )
+        self.assertEquals(s.build(), 
+            "search?q=pants" + 
+            '&sort=' + enc("brand:desc,price:asc")
         )
 
 if __name__ == '__main__':

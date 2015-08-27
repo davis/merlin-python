@@ -9,18 +9,20 @@ from .common import Builder, Api
 class Search(Api):
     PREFIX = "search"
 
-    def __init__(self, q="", start=None, num=None, filters=None, facets=None):
+    def __init__(self, q="", start=None, num=None, filters=None, 
+                       facets=None, sort=None):
         self.q = q
         self.start = start
         self.num = num
         self.filter = filters
         self.facet = facets
+        self.sort = sort
 
     def build(self):
         params = OrderedDict(q=self.q)
 
         # Sigh
-        for k in ('filter', 'facet', 'start', 'num'):
+        for k in ('filter', 'facet', 'start', 'num', 'sort'):
             v = getattr(self, k)
             if v is not None:
                 if not isinstance(v, (tuple, list)):
