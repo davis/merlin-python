@@ -6,7 +6,7 @@ from collections import OrderedDict
 from .error import MerlinException
 from .common import Builder, Api
 from .utils import *
-from .sort import Sorter
+from .sort import SortField
 
 class Search(Api):
     PREFIX = "search"
@@ -17,7 +17,10 @@ class Search(Api):
             ForAllValidator(BuilderValidator) | BuilderValidator,
             ToListF().andThen(MapF(BuildF))
         ),
-        "sort": FieldType(IsValidator(Sorter), BuildF), 
+        "sort": FieldType(
+            ForAllValidator(IsValidator(SortField)), 
+            MapF(BuildF).andThen(DelimF(','))
+        ), 
         "fields": FieldType(
             ForAllValidator(IsValidator(basestring)),
             DelimF(",")

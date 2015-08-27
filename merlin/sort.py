@@ -1,16 +1,4 @@
 from .common import Builder
-class Sorter(Builder):
-    def __init__(self, sorts):
-        self.sorts = sorts
-
-    def asc(self, field):
-        return Sorter(self.sorts + [Asc(field)])
-
-    def desc(self, field):
-        return Sorter(self.sorts + [Desc(field)])
-
-    def build(self):
-        return ','.join(s.build() for s in self.sorts)
 
 class SortField(Builder):
     def __init__(self, field):
@@ -27,9 +15,9 @@ class Desc(SortField):
 class Sort(object):
     @staticmethod
     def asc(field):
-        return Sorter([Asc(field)])
+        return Asc(field)
 
     @staticmethod
     def desc(field):
-        return Sorter([Desc(field)])
+        return Desc(field)
 

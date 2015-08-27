@@ -88,7 +88,10 @@ class MerlinTest(unittest.TestCase):
     def test_sorting(self):
         s = Search(
             q = "pants", 
-            sort = S.desc('brand').asc('price')
+            sort = [
+                S.desc('brand'),
+                S.asc('price')
+            ]
         )
         self.assertEquals(s.build(), 
             "search?q=pants" + 
