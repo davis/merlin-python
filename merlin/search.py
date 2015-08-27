@@ -9,13 +9,14 @@ from .utils import *
 from .sort import SortField
 from .filter import NF
 
+OneOrNValidator = lambda v: ForAllValidator(v) | v
 class Search(Api):
     PREFIX = "search"
     FIELD_TYPES = {
         "start": FieldType(PosIntValidator, IdentityF),
         "num":   FieldType(PosIntValidator, IdentityF),
         "facet": FieldType(
-            ForAllValidator(BuilderValidator) | BuilderValidator,
+            OneOrNValidator(BuilderValidator),
             ToListF() >> MapF(BuildF)
         ),
         "sort": FieldType(
@@ -26,7 +27,10 @@ class Search(Api):
             ForAllValidator(IsValidator(basestring)),
             DelimF(",")
         ),
-        "filter": FieldType(IsValidator(NF), BuildF)
+        "filter": FieldType(
+            OneOrNValidator(IsValidator(NF)),
+            ToListF() >> MapF(BuildF)
+        )
     }
 
     def __init__(self, q="", start=None, num=None, filter=None, 

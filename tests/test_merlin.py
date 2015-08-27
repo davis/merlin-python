@@ -109,16 +109,32 @@ class MerlinTest(unittest.TestCase):
             '&fields=' + enc("one,two,three")
         )
 
-    def test_fields(self):
+    def test_filters(self):
         s = Search(
-            q = "shoes",
             filter=NF.cnf(
                 (Field('Color') == 'Red') & (Field('Color') != 'Blue')
             )
         )
         self.assertEquals(s.build(), 
-            "search?q=shoes" + 
+            "search?q=" + 
             '&filter=' + enc(r"exp=Color:Red,Color:!Blue/type=cnf")
+        )
+
+    def test_multi_filters(self):
+        s = Search(
+            filter=[
+                NF.cnf(
+                    (Field('Color') == 'Red') & (Field('Color') != 'Blue')
+                ),
+                NF.dnf(
+                    Field('Price').between(0, 100)
+                )
+            ]
+        )
+        self.assertEquals(s.build(), 
+            "search?q=" + 
+            '&filter=' + enc(r"exp=Color:Red,Color:!Blue/type=cnf") +
+            '&filter=' + enc(r"exp=Price:[0:100]/type=dnf")
         )
 
 if __name__ == '__main__':
