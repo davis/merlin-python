@@ -18,22 +18,27 @@ class Search(Api):
             ToListF().andThen(MapF(BuildF))
         ),
         "sort": FieldType(IsValidator(Sorter), BuildF), 
+        "fields": FieldType(
+            ForAllValidator(IsValidator(basestring)),
+            DelimF(",")
+        )
     }
 
     def __init__(self, q="", start=None, num=None, filters=None, 
-                       facets=None, sort=None):
+                       facets=None, sort=None, fields=None):
         self.q = q
         self.start = start
         self.num = num
         self.filter = filters
         self.facet = facets
         self.sort = sort
+        self.fields = fields
 
     def build(self):
         params = OrderedDict(q=self.q)
 
         # Sigh
-        for k in ('filter', 'facet', 'start', 'num', 'sort'):
+        for k in ('filter', 'facet', 'start', 'num', 'sort', 'fields'):
             v = getattr(self, k)
             if v is not None:
                 ft = self.FIELD_TYPES.get(k)

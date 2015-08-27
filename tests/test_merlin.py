@@ -95,5 +95,15 @@ class MerlinTest(unittest.TestCase):
             '&sort=' + enc("brand:desc,price:asc")
         )
 
+    def test_fields(self):
+        s = Search(
+            q = "socks",
+            fields=["one", "two", "three"]
+        )
+        self.assertEquals(s.build(), 
+            "search?q=socks" + 
+            '&fields=' + enc("one,two,three")
+        )
+
 if __name__ == '__main__':
     unittest.main()
