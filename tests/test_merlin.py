@@ -140,12 +140,13 @@ class MerlinTest(unittest.TestCase):
     def test_multi_values(self):
         s = Search(
             filter=NF.cnf(
-                Field('Color') == ('Blue', 'Red') 
+                (Field('Color') == ('Blue', 'Red')) & \
+                (Field('Color') != ('Teal', 'Green'))
             )
         )
         self.assertEquals(s.build(),
             "search?q=" +
-            "&filter=" + enc(r"exp=Color:Blue|Color:Red/type=cnf")
+            "&filter=" + enc(r"exp=Color:Blue|Color:Red,Color:!Teal,Color:!Green/type=cnf")
         )
 
     def test_single_filter(self):
