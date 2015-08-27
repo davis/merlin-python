@@ -252,5 +252,11 @@ class EngineTest(unittest.TestCase):
         with self.engine(s) as r:
             self.assertEquals(r.hits.numFound, 2)
 
+    def test_error(self):
+        s = Search(fields=['ponies'])
+        with self.assertRaises(IOError):
+            with self.engine(s) as r:
+                self.fail("should never get here")
+
 if __name__ == '__main__':
     unittest.main()
