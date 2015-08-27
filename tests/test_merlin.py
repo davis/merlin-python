@@ -258,5 +258,14 @@ class EngineTest(unittest.TestCase):
             with self.engine(s) as r:
                 self.fail("should never get here")
 
+    def test_hist_facet(self):
+        s = Search(
+            facets=F.hist('price', start=0, end=100, gap=50)
+        )
+        with self.engine(s) as r:
+            res = set(r.facets.histograms['price'].items())
+            wanted = set([(('0.0', '50.0'), 0), (('50.0', '100.0'), 4)])
+            self.assertEquals(res, wanted)
+
 if __name__ == '__main__':
     unittest.main()

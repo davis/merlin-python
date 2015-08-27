@@ -142,7 +142,7 @@ class Facets(object):
             hists[fname] = m = {}
             for f in v.get('histograms', []):
                 to_v, from_v, count = f['to'], f['from'], f['count']
-                hists[(to_v, from_v)] = count
+                m[(from_v, to_v)] = count
 
         return hists
 
