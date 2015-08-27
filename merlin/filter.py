@@ -1,3 +1,5 @@
+from operator import eq, ne, or_, and_
+from collections import Iterable
 from .common import Builder
 
 def assert_op(v, op):
@@ -27,11 +29,22 @@ class Field(object):
         assert_op(v, '>=')
         return self._new_op('>=', slice(v, None))
 
-    def __eq__(self, v):
-        return self._new_op('=', v)
+    def _op(self, vs, fop, op, join):
+        if not isinstance(vs, basestring) and isinstance(vs, Iterable):
+            fields = [op(self, v) for v in vs]
+            assert fields, "Requires non-empty iterator!"
+            return reduce(join, fields)
 
-    def __ne__(self, v):
-        return self._new_op('!=', v)
+        elif isinstance(vs, basestring):
+            return self._new_op(fop, vs)
+
+        raise ValueError("Unknown type!")
+
+    def __eq__(self, vs):
+        return self._op(vs, '=', eq, or_)
+
+    def __ne__(self, vs):
+        return self._op(vs, '!=', ne, and_)
 
     def between(self, start, stop):
         assert all(isinstance(s, (int, float)) for s in (start, stop)), \

@@ -137,6 +137,17 @@ class MerlinTest(unittest.TestCase):
             '&filter=' + enc(r"exp=Price:[0:100]/type=dnf")
         )
 
+    def test_multi_values(self):
+        s = Search(
+            filter=NF.cnf(
+                Field('Color') == ('Blue', 'Red') 
+            )
+        )
+        self.assertEquals(s.build(),
+            "search?q=" +
+            "&filter=" + enc(r"exp=Color:Blue|Color:Red/type=cnf")
+        )
+
     def test_single_filter(self):
         s = Search(
             q='hoodie',
