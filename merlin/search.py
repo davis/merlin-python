@@ -34,7 +34,7 @@ class Search(Api):
     }
 
     def __init__(self, q="", start=None, num=None, filter=None, 
-                       facets=None, sort=None, fields=None):
+                       facets=None, sort=None, fields=None, correct=True):
         self.q = q
         self.start = start
         self.num = num
@@ -42,6 +42,7 @@ class Search(Api):
         self.facet = facets
         self.sort = sort
         self.fields = fields
+        self.correct = correct
 
     def build(self):
         params = OrderedDict(q=self.q)
@@ -57,6 +58,9 @@ class Search(Api):
 
                 params[k] = v
 
+        if not self.correct:
+            params['correct'] = 'false'
+
         return urljoin(self.PREFIX, "?%s" % urlencode(params, True))
 
     def process_results(self, raw):
@@ -64,12 +68,13 @@ class Search(Api):
         
 class SearchResults(object):
 
-    def __init__(self, q, num, start, hits, facets):
+    def __init__(self, q, num, start, hits, facets, cq):
         self.q = q
         self.num = num
         self.start = start
         self.hits = hits
         self.facets = facets
+        self.cq = cq
 
     def __iter__(self):
         return iter(self.hits)
@@ -93,7 +98,8 @@ class SearchResults(object):
         results = data['results']
         hits = Hits(results['numfound'], results['hits'])
         facets = Facets(results['facets'])
-        return cls(data['q'], data['num'], data['start'], hits, facets)
+        cq = results.get('cq')
+        return cls(data['q'], data['num'], data['start'], hits, facets, cq)
 
     def __unicode__(self):
         return u"SearchResults(q='%s', numFound=%s)" % (self.q, self.hits.numFound)
