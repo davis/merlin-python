@@ -4,12 +4,12 @@ The Merlin Python library provides a python interface to the Blackbird search en
 
 # Installation
 
-1. `python setup.py install`
+- `python setup.py install`
 
 Or, in a virtualenv:
-1. `virtualenv /path/to/venv`
-2. `source /path/to/venv/bin/activate`
-3. `python setup.py install`
+- `virtualenv /path/to/venv`
+- `source /path/to/venv/bin/activate`
+- `python setup.py install`
 
 # Testing / Contributing
 
