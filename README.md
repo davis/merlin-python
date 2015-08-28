@@ -6,7 +6,16 @@ The Merlin Python library provides a python interface to the Blackbird search en
 
 1. `python setup.py install`
 
-# Usage
+# Testing / Contributing
+
+1. Run tests using `python setup.py test`
+2. Add tests for new features / bug fixes
+3. Commit and issue a pull
 
 ## Documentation
+See http://www.blackbird.am/docs for usage documents.
+
+The examples posted there are also listed in `examples.py`
+
+Alternatively, view `tests/test_merlin.py` for lists of commonly used features.
 
