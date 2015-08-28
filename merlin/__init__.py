@@ -35,17 +35,3 @@ class Merlin(object):
         assert isinstance(api, Api), "Requires an API instance!"
         return self.engine(self, api)
 
-class F2(object):
-    __slots__ = ("f1", "f2")
-    def __init__(self, f1, f2):
-        assert all(isinstance(f, (F2, Filter)) for f in (f1, f2))
-
-        self.f1 = f1
-        self.f2 = f2
-
-class And(F2):
-    pass
-
-class Or(F2):
-    pass
-

@@ -117,6 +117,18 @@ class MerlinTest(unittest.TestCase):
             '&filter=' + enc(r"exp=Color:Red,Color:!Blue/type=cnf")
         )
 
+    def test_filter_tags(self):
+        s = Search(
+            filter=NF.cnf(
+                (Field('Color') == 'Red') & (Field('Color') != 'Blue'),
+                tag="redandblue"
+            )
+        )
+        self.assertEquals(s.build(), 
+            "search?q=" + 
+            '&filter=' + enc(r"exp=Color:Red,Color:!Blue/type=cnf/tag=redandblue")
+        )
+
     def test_multi_filters(self):
         s = Search(
             filter=[

@@ -55,27 +55,33 @@ class Field(object):
         return self._new_op('in', slice(start, stop))
 
 class NF(Builder):
-    @staticmethod
-    def cnf(f):
-        return CNF(f)
+    def __init__(self, fs, tag=None):
+        self.fs = fs
+        self.tag = tag
+
+    def _build(self, ftype):
+        res = "exp=%s/type=%s" % (self.fs.build(), ftype)
+        if self.tag is not None:
+            res = "%s/tag=%s" % (res, self.tag)
+
+        return res
 
     @staticmethod
-    def dnf(f):
-        return DNF(f)
+    def cnf(f, tag=None):
+        return CNF(f, tag)
+
+    @staticmethod
+    def dnf(f, tag=None):
+        return DNF(f, tag)
     
 class CNF(NF):
-    def __init__(self, fs):
-        self.fs = fs
-
     def build(self):
-        return "exp=%s/type=cnf" % self.fs.build()
+        return self._build('cnf')
 
 class DNF(NF):
-    def __init__(self, fs):
-        self.fs = fs
-
     def build(self):
-        return "exp=%s/type=dnf" % self.fs.build()
+        return self._build('dnf')
+
 
 ESCAPE_SET = {
     ",":  r"\,",
