@@ -199,6 +199,14 @@ class EngineTest(unittest.TestCase):
     def setUp(self):
         self.engine = Merlin('blackbird', 'dev', 'agathon')
 
+    def test_hosts(self):
+        engine = Merlin('blackbird', 'dev', 'agathon')
+        self.assertEquals(engine.host, 'search-dev.search.blackbird.am')
+        engine = Merlin('blackbird', 'stage', 'agathon')
+        self.assertEquals(engine.host, 'search-staging.search.blackbird.am')
+        engine = Merlin('blackbird', 'prod', 'agathon')
+        self.assertEquals(engine.host, 'search-prod.search.blackbird.am')
+
     def test_simple_q(self):
         s = Search(q='dress')
         with self.engine(s) as r:
