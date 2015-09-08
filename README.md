@@ -19,11 +19,8 @@ Or, in a virtualenv:
 
 ## Documentation
 
-See http://www.blackbird.am/docs for usage documents.
-
-The examples posted there are also listed in `examples.py`
-Similarly, the examples posted in upload-examples.py walk through how to issue
-standard CRUD operations.
+View the `examples/` folder for usages.
 
 Alternatively, view the `tests/` directory for lists of commonly used features.
 
+http://www.blackbird.am/docs will be updated with additional examples.
