@@ -63,7 +63,8 @@ def build_arg_parser():
     search = subparsers.add_parser("read", help="Reads all the fields for a "\
             "given set of documents")
 
-    search.add_argument("--docs", dest="docs", nargs="+", help="Document IDs")
+    search.add_argument("--docs", dest="docs", nargs="+", required=True,
+            help="Document IDs")
     search.add_argument("--fields", dest="fields", nargs="+",
             help="Fields to retrieve")
     search.add_argument("--in-order", dest="inOrder", action="store_true", 
