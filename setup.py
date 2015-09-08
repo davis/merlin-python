@@ -9,8 +9,8 @@ setup(name='py-merlin',
       version=merlin.__version__,
       description='Python bindings for Blackbird Search',
       url="https://github.com/blackbirdtech/merlin-python",
-      packages=['merlin'],
-      scripts=[],
+      packages=['merlin', 'merlin/upload'],
+      scripts=['bin/mcrud.py'],
       test_suite='tests',
       install_requires=[
           # See requirements.txt

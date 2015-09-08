@@ -17,15 +17,22 @@ class IndexOp(object):
         data = json.loads(raw)
         return UploadResults(data['msg'], data['status'], data['success'])
 
+    def __iadd__(self, doc):
+        raise NotImplementedError()
+
 class Add(IndexOp):
     endpoint = 'add'
     def add_doc(self, doc):
         assert isinstance(doc, dict)
         self.docs.append(doc)
+        return self
 
     def add_docs(self, it):
         for i in it:
             self.add_doc(doc)
+
+    def __iadd__(self, doc):
+        return self.add_doc(doc)
 
 class Update(IndexOp):
     endpoint = 'update'
@@ -33,10 +40,14 @@ class Update(IndexOp):
     def update_doc(self, doc):
         assert isinstance(doc, dict)
         self.docs.append(doc)
+        return self
 
     def update_docs(self, it):
         for i in it:
             self.delete_doc(doc)
+
+    def __iadd__(self, doc):
+        return self.update_doc(doc)
 
 class Delete(IndexOp):
     endpoint = 'delete'
@@ -48,7 +59,11 @@ class Delete(IndexOp):
         assert isinstance(doc, dict)
         self.docs.append(doc)
 
+        return self
+
     def delete_docs(self, it):
         for i in it:
             self.delete_doc(doc)
 
+    def __iadd__(self, doc):
+        return self.delete_doc(doc)

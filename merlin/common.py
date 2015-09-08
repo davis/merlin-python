@@ -84,8 +84,8 @@ class UploadEngine(Engine):
         ])
 
     def __enter__(self):
-        url = self._build_url()
-        req = self.build_request(url, self.op.build_json())
+        url  = self._build_url()
+        req  = self.build_request(url, self.op.build_json())
         data = self._execute(req)
         return self.op.process_results(data)
         
