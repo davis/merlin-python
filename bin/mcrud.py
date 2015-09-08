@@ -93,13 +93,17 @@ def read(args):
 
 def readDocs(args):
     if args.jDocs is not None:
-        return args.jDocs
+        for d in args.jDocs:
+            yield args.jDocs
 
     elif args.inFile == '-':
-        return (json.loads(line) for line in sys.stdin)
+        for line in sys.stdin:
+            yield json.loads(line)
+
     else:
         with file(args.inFile) as f:
-            return (json.loads(line) for line in f)
+            for line in f:
+                yield json.loads(line)
 
 def batch(iterable, size):
     it = iter(iterable)
