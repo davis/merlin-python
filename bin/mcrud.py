@@ -11,8 +11,10 @@ from merlin.filter import Field, NF
 from merlin.upload import Add, Update, Delete
 
 def add_creds(parser):
-    parser.add_argument("--username", help="Username credential")
-    parser.add_argument("--authtoken", help="Authentication token")
+    parser.add_argument("--username", required=True,
+            help="Username credential")
+    parser.add_argument("--authtoken", required=True,
+            help="Authentication token")
 
 def add_doc_group(parser, verb):
     group = parser.add_mutually_exclusive_group(required=True)
