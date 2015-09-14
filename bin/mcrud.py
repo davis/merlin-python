@@ -39,6 +39,8 @@ def build_arg_parser():
     parser = argparse.ArgumentParser(description='Command line tool for managing search')
     parser.add_argument("--instance", dest="instance", required=True,
             help="Full instance name: eg. blackbird.dev.foobar")
+    parser.add_argument("--index", dest="index", default="subjects", 
+            help="Index to use.  By default, uses subjects")
 
     parser.add_argument("--host", dest="host", 
             help="Host to use.  If omitted, uses default.")
@@ -130,7 +132,7 @@ def cud(args):
     bs = args.batchSize
     method = ({"add": Add, "update": Update, "delete": Delete})[args.command]
     for i, docs in enumerate(batch(readDocs(args), bs)):
-        op = method()
+        op = method(index=args.index)
         for doc in docs:
             op += doc
 

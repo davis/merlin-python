@@ -10,7 +10,8 @@ class IndexOp(object):
         self.docs = []
 
     def build_json(self):
-        return json.dumps({self.index: [{"data": self.docs}]})
+        raw = json.dumps({"subjects": [{"data": self.docs, "name": self.index}]})
+        return raw
     
     @staticmethod
     def process_results(raw):
