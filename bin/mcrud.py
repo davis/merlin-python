@@ -96,7 +96,7 @@ def read(args):
 def readDocs(args):
     if args.jDocs is not None:
         for d in args.jDocs:
-            yield args.jDocs
+            yield d
 
     elif args.inFile == '-':
         for line in sys.stdin:
@@ -132,6 +132,7 @@ def cud(args):
     for i, docs in enumerate(batch(readDocs(args), bs)):
         op = method()
         for doc in docs:
+            print(doc)
             op += doc
 
         with engine(op) as results:
