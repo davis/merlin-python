@@ -16,20 +16,23 @@ def add_creds(parser):
     parser.add_argument("--authtoken", required=True,
             help="Authentication token")
 
-def add_doc_group(parser, verb):
+def add_doc_group(parser, verb, ids_ok=False):
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument("--json-docs", dest="jDocs", nargs="+", type=jtype,
             help="Documents to %s, in json format" % verb)
     group.add_argument("--file", dest="inFile",
             help="File containing documents in json format, one per line, to %s" % verb)
+    if ids_ok:
+        group.add_argument("--doc-ids", dest="docIds", nargs="+",
+                help="Document IDs to %s" % verb)
 
 def add_batch(parser):
     parser.add_argument("--batch-size", dest="batchSize", default=1000, type=int,
             help="Batch size for large scale operations")
 
-def add_all(parser, verb):
+def add_all(parser, verb, ids_ok=False):
     add_creds(parser)
-    add_doc_group(parser, verb)
+    add_doc_group(parser, verb, ids_ok)
     add_batch(parser)
     
 def jtype(d):
@@ -51,7 +54,7 @@ def build_arg_parser():
     
     # Delete
     delete = subparsers.add_parser("delete", help="Delete a set of documents")
-    add_all(delete, 'delete')
+    add_all(delete, 'delete', True)
 
     # Update
     update = subparsers.add_parser("update", help="Update a set of documents")
@@ -102,6 +105,9 @@ def readDocs(args):
         for line in sys.stdin:
             yield json.loads(line)
 
+    elif hasattr(args, 'docIds') and args.docIds:
+        for d in args.docIds:
+            yield {"id": d}
     else:
         with file(args.inFile) as f:
             for line in f:
@@ -132,7 +138,6 @@ def cud(args):
     for i, docs in enumerate(batch(readDocs(args), bs)):
         op = method()
         for doc in docs:
-            print(doc)
             op += doc
 
         with engine(op) as results:
