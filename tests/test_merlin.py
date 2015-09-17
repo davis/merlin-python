@@ -6,6 +6,7 @@ from merlin.facet import Facet as F
 from merlin.filter import Field, NF
 from merlin.sort import Sort as S
 from merlin.search import Search
+from merlin.group import Group
 
 class MerlinTest(unittest.TestCase):
 
@@ -178,6 +179,17 @@ class MerlinTest(unittest.TestCase):
         self.assertEquals(s.build(), 
             "search?q=hoodie" + 
             '&filter=' + enc(r"exp=price:[:20),age:(10:]/type=cnf")
+        )
+
+    def test_group(self):
+        s = Search(
+            q='hoodie',
+            group=Group(field='category', num=10, sort=S.asc('price'))
+        )
+
+        self.assertEquals(s.build(), 
+            "search?q=hoodie" + 
+            '&group=' + enc(r"field=category/sort=price:asc/num=10")
         )
 
     def test_needs_num(self):
