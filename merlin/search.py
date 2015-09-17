@@ -8,6 +8,7 @@ from .common import Builder, Api
 from .utils import *
 from .sort import SortField
 from .filter import NF
+from .group import Group
 
 OneOrNValidator = lambda v: ForAllValidator(v) | v
 class Search(Api):
@@ -30,11 +31,16 @@ class Search(Api):
         "filter": FieldType(
             OneOrNValidator(IsValidator(NF)),
             ToListF() >> MapF(BuildF)
+        ),
+        "group": FieldType(
+            IsValidator(Group),
+            BuildF
         )
     }
 
     def __init__(self, q="", start=None, num=None, filter=None, 
-                       facets=None, sort=None, fields=None, correct=True):
+                       facets=None, sort=None, fields=None, correct=True,
+                       group=None):
         self.q = q
         self.start = start
         self.num = num
@@ -42,13 +48,14 @@ class Search(Api):
         self.facet = facets
         self.sort = sort
         self.fields = fields
+        self.group = group
         self.correct = correct
 
     def build(self):
         params = OrderedDict(q=self.q)
 
         # Sigh
-        for k in ('filter', 'facet', 'start', 'num', 'sort', 'fields'):
+        for k in ('filter', 'facet', 'start', 'num', 'sort', 'fields', 'group'):
             v = getattr(self, k)
             if v is not None:
                 ft = self.FIELD_TYPES.get(k)
