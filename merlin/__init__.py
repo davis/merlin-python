@@ -7,7 +7,8 @@ from .upload import IndexOp
 class Environment(object):
 
     def __init__(self, company, environment, instance, 
-            host=None, use_ssl=False, engine=DefaultEngine):
+            host=None, use_ssl=False, version='v1', 
+            engine=DefaultEngine):
 
         self.company = company
         self.environment = environment
@@ -15,6 +16,7 @@ class Environment(object):
         self.host = host
         self.use_ssl = use_ssl
         self.engine = engine
+        self.version = version
 
     def __call__(self, op):
         raise NotImplementedError()
@@ -35,13 +37,16 @@ class Merlin(Environment):
             self.host = HOSTS[self.environment]
 
     def build_url(self):
+        fqn = '.'.join((self.company, self.environment, self.instance))
         pr = ParseResult(
             'https' if self.use_ssl else 'http',
             self.host,
-            '/%s/' % '.'.join((self.company, self.environment, self.instance)),
+            '%s/%s/' % (self.version, fqn),
             None, None, None)
 
-        return urlunparse(pr)
+        res = urlunparse(pr)
+        print res
+        return res
 
     def __call__(self, api):
         assert isinstance(api, Api), "Requires an API instance!"

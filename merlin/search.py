@@ -40,7 +40,7 @@ class Search(Api):
 
     def __init__(self, q="", start=None, num=None, filter=None, 
                        facets=None, sort=None, fields=None, correct=True,
-                       group=None):
+                       group=None, index="products"):
         self.q = q
         self.start = start
         self.num = num
@@ -50,6 +50,7 @@ class Search(Api):
         self.fields = fields
         self.group = group
         self.correct = correct
+        self.index = index
 
     def build(self):
         params = OrderedDict(q=self.q)
@@ -68,7 +69,8 @@ class Search(Api):
         if not self.correct:
             params['correct'] = 'false'
 
-        return urljoin(self.PREFIX, "?%s" % urlencode(params, True))
+        root =  "%s/%s" % (self.index, self.PREFIX)
+        return urljoin(root, "?%s" % urlencode(params, True))
 
     def process_results(self, raw):
         return SearchResults.parse(raw)
