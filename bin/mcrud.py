@@ -42,7 +42,7 @@ def build_arg_parser():
     parser = argparse.ArgumentParser(description='Command line tool for managing search')
     parser.add_argument("--instance", dest="instance", required=True,
             help="Full instance name: eg. blackbird.dev.foobar")
-    parser.add_argument("--index", dest="index", default="subjects", 
+    parser.add_argument("--index", dest="index", default="products", 
             help="Index to use.  By default, uses subjects")
 
     parser.add_argument("--host", dest="host", 
@@ -70,7 +70,7 @@ def build_arg_parser():
     search = subparsers.add_parser("read", help="Reads all the fields for a "\
             "given set of documents")
 
-    search.add_argument("--docs", dest="docs", nargs="+", required=True,
+    search.add_argument("--doc-ids", dest="docs", nargs="+", required=True,
             help="Document IDs")
     search.add_argument("--fields", dest="fields", nargs="+",
             help="Fields to retrieve")
@@ -92,7 +92,8 @@ def read(args):
     for docSet in docs:
         s = Search(
             filter=NF.cnf(Field('id') == docSet),
-            fields=args.fields
+            fields=args.fields,
+            index=args.index
         )
         with engine(s) as results:
             for hit in results.hits:
