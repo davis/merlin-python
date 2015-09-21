@@ -25,7 +25,7 @@ Alternatively, view the `tests/` directory for lists of commonly used features.
 
 http://www.blackbird.am/docs will be updated with additional examples.
 
-## mcrud.py
+# mcrud.py
 
 Merlin python comes with an easy to use tool for running CRUD operations on your search index: mcrud.py
 
@@ -37,13 +37,13 @@ Command-line options can be viewed by add -h:
     mcrud.py delete -h
     mcrud.py read -h
 
-# READ
+### READ
 
     # Reads two documents from a provided instance's products table
     # No extra credentials are required
     mcrud.py --instance company.env.inst read --doc-ids f346904e7dcd43c521bff2e6dcfae21a c05ef333b5dbd9f31123a65221762395 --fields 'title,url,id'
 
-# ADD, UPDATE, or DELETE
+### ADD, UPDATE, or DELETE
 All data modifying actions require the use of authentication credentials:
 
     # Deleting
