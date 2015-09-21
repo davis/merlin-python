@@ -44,9 +44,7 @@ class Merlin(Environment):
             '%s/%s/' % (self.version, fqn),
             None, None, None)
 
-        res = urlunparse(pr)
-        print res
-        return res
+        return urlunparse(pr)
 
     def __call__(self, api):
         assert isinstance(api, Api), "Requires an API instance!"

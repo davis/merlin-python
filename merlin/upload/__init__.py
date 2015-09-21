@@ -5,7 +5,7 @@ UploadResults = namedtuple('UpResults', 'msg,status,success')
 
 class IndexOp(object):
     endpoint = None
-    def __init__(self, index='subjects'):
+    def __init__(self, index='products'):
         self.index = index
         self.docs = []
 
