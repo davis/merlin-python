@@ -75,9 +75,10 @@ class Search(Api):
         
 class SearchResults(object):
 
-    def __init__(self, q, num, start, hits, facets, cq, raw):
+    def __init__(self, q, qid, num, start, hits, facets, cq, raw):
         self.raw = raw
         self.q = q
+        self.qid = qid
         self.num = num
         self.start = start
         self.hits = hits
@@ -107,7 +108,8 @@ class SearchResults(object):
         hits = Hits(results['numfound'], results['hits'])
         facets = Facets(results['facets'])
         cq = results.get('cq')
-        return cls(data['q'], data['num'], data['start'], hits, facets, cq, data)
+        return cls(data['q'], data['qid'], data['num'], 
+                data['start'], hits, facets, cq, data)
 
     def __unicode__(self):
         return u"SearchResults(q='%s', numFound=%s)" % (self.q, self.hits.numFound)
