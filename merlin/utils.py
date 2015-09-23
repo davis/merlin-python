@@ -1,4 +1,6 @@
 from collections import Iterable
+import re
+
 from common import Builder
 from error import ValidationError
 
@@ -123,6 +125,13 @@ PosIntValidator = LambdaValidator(
         lambda v: IntValidator.test(v) and v >= 0,
         "needs to be a positive integer"
 )
+
+RegexValidator = lambda r: (lambda rx: LambdaValidator(
+        lambda v: isinstance(v, int) or rx.match(v) is not None,
+        "Field does not match the correct specification"
+))(re.compile(r))
+
+IdValidator = RegexValidator("^[a-z][a-z0-9_]{0,63}$")
 
 IsValidator = lambda t: LambdaValidator(
         lambda v: isinstance(v, t),
