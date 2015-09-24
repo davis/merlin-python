@@ -55,6 +55,10 @@ class ToListF(Formatter):
 
         return v
 
+class BoolF(Formatter):
+    def __call__(self, v):
+        return 'true' if v else 'false'
+
 class _BuildF(Formatter):
     def __call__(self, v):
         return v.build()
@@ -116,6 +120,11 @@ class LambdaValidator(Validator):
 
         return True
 
+BoolValidator = LambdaValidator(
+        lambda v: isinstance(v, bool), 
+        "needs to be an int"
+)
+
 IntValidator = LambdaValidator(
         lambda v: isinstance(v, (int, long)), 
         "needs to be an int"
@@ -131,7 +140,7 @@ RegexValidator = lambda r: (lambda rx: LambdaValidator(
         "Field does not match the correct specification"
 ))(re.compile(r))
 
-IdValidator = RegexValidator("^[a-z][a-z0-9_]{0,63}$")
+IdValidator = RegexValidator("^[a-z0-9_]{1,63}$")
 
 IsValidator = lambda t: LambdaValidator(
         lambda v: isinstance(v, t),

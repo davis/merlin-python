@@ -4,13 +4,13 @@ from urlparse import urljoin
 from collections import OrderedDict
 
 from .error import MerlinException
-from .common import Builder, Api
+from .common import Builder, PApi
 from .utils import *
 from .filter import NF
 from .search import Hits
 
 OneOrNValidator = lambda v: ForAllValidator(v) | v
-class Vrec(Api):
+class Vrec(PApi):
     PREFIX = "vrec"
     FIELD_TYPES = {
         "id": FieldType(IdValidator, IdentityF),
@@ -25,27 +25,14 @@ class Vrec(Api):
         )
     }
 
+    REQUIRED = ('id',)
+    FIELDS   = ('id', 'num', 'filter', 'fields')
+
     def __init__(self, id, num=None, filter=None, fields=None):
         self.id = id
         self.num = num
         self.filter = filter
         self.fields = fields
-
-    def build(self):
-        params = OrderedDict(id=self.id)
-
-        # Sigh
-        for k in ('fields', 'filter', 'num'):
-            v = getattr(self, k)
-            if v is not None:
-                ft = self.FIELD_TYPES.get(k)
-                if ft is not None:
-                    ft.validate(v)
-                    v = ft.format(v)
-
-                params[k] = v
-
-        return urljoin(self.PREFIX, "?%s" % urlencode(params, True))
 
     def process_results(self, raw):
         return VrecResults.parse(raw)
