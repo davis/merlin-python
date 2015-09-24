@@ -16,6 +16,32 @@ class Api(Builder):
     def process_results(self, data):
         raise NotImplementedError()
 
+class PApi(Api):
+    PREFIX = None
+    FIELD_TYPES = None
+    REQUIRED = ()
+    FIELDS = ()
+
+    def build(self):
+        params = OrderedDict()
+        # Sigh
+        for k in self.FIELDS:
+            v = getattr(self, k)
+            if v is not None:
+                ft = self.FIELD_TYPES.get(k)
+                if ft is not None:
+                    ft.validate(v)
+                    v = ft.format(v)
+
+                params[k] = v
+
+        # validate
+        for fn in self.REQUIRED:
+            if fn not in params:
+                raise AttributeError("Missing field %s" % fn)
+
+        return urlparse.urljoin(self.PREFIX, "?%s" % urlencode(params, True))
+
 class Engine(object):
     
     def _decode(self, h):

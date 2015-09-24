@@ -1,17 +1,16 @@
 import json
 from urllib import urlencode
-from urlparse import urljoin
 from collections import OrderedDict
 
 from .error import MerlinException
-from .common import Builder, Api
+from .common import Builder, PApi
 from .utils import *
 from .sort import SortField
 from .filter import NF
 from .group import Group
 
 OneOrNValidator = lambda v: ForAllValidator(v) | v
-class Search(Api):
+class Search(PApi):
     PREFIX = "search"
     FIELD_TYPES = {
         "start": FieldType(PosIntValidator, IdentityF),
@@ -35,11 +34,19 @@ class Search(Api):
         "group": FieldType(
             IsValidator(Group),
             BuildF
+        ),
+        "correct": FieldType(
+            BoolValidator,
+            BoolF()
         )
     }
 
+
+    FIELDS = ('q', 'filter', 'facet', 'start', 'num', 'sort', 'fields', 'group', 'correct')
+    REQUIRED = ('q',)
+
     def __init__(self, q="", start=None, num=None, filter=None, 
-                       facets=None, sort=None, fields=None, correct=True,
+                       facets=None, sort=None, fields=None, correct=None,
                        group=None):
         self.q = q
         self.start = start
@@ -50,25 +57,6 @@ class Search(Api):
         self.fields = fields
         self.group = group
         self.correct = correct
-
-    def build(self):
-        params = OrderedDict(q=self.q)
-
-        # Sigh
-        for k in ('filter', 'facet', 'start', 'num', 'sort', 'fields', 'group'):
-            v = getattr(self, k)
-            if v is not None:
-                ft = self.FIELD_TYPES.get(k)
-                if ft is not None:
-                    ft.validate(v)
-                    v = ft.format(v)
-
-                params[k] = v
-
-        if not self.correct:
-            params['correct'] = 'false'
-
-        return urljoin(self.PREFIX, "?%s" % urlencode(params, True))
 
     def process_results(self, raw):
         return SearchResults.parse(raw)
