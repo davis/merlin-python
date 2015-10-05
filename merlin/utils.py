@@ -1,4 +1,6 @@
 from collections import Iterable
+import re
+
 from common import Builder
 from error import ValidationError
 
@@ -52,6 +54,10 @@ class ToListF(Formatter):
             v = [v]
 
         return v
+
+class BoolF(Formatter):
+    def __call__(self, v):
+        return 'true' if v else 'false'
 
 class _BuildF(Formatter):
     def __call__(self, v):
@@ -114,6 +120,11 @@ class LambdaValidator(Validator):
 
         return True
 
+BoolValidator = LambdaValidator(
+        lambda v: isinstance(v, bool), 
+        "needs to be an int"
+)
+
 IntValidator = LambdaValidator(
         lambda v: isinstance(v, (int, long)), 
         "needs to be an int"
@@ -123,6 +134,13 @@ PosIntValidator = LambdaValidator(
         lambda v: IntValidator.test(v) and v >= 0,
         "needs to be a positive integer"
 )
+
+RegexValidator = lambda r: (lambda rx: LambdaValidator(
+        lambda v: isinstance(v, int) or rx.match(v) is not None,
+        "Field does not match the correct specification"
+))(re.compile(r))
+
+IdValidator = RegexValidator("^[a-z0-9_]{1,63}$")
 
 IsValidator = lambda t: LambdaValidator(
         lambda v: isinstance(v, t),
