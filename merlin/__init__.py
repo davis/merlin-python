@@ -1,5 +1,5 @@
 from urlparse import ParseResult, urlunparse
-__version__ = '0.0.1'
+__version__ = '0.1.0'
 
 from .common import Api, Engine, DefaultEngine, UploadEngine
 from .upload import IndexOp
