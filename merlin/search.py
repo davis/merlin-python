@@ -7,6 +7,7 @@ from .common import Builder, PApi
 from .utils import *
 from .sort import SortField
 from .filter import NF
+from .geo import Geo
 from .group import Group
 
 OneOrNValidator = lambda v: ForAllValidator(v) | v
@@ -35,6 +36,10 @@ class Search(PApi):
             IsValidator(Group),
             BuildF
         ),
+        "geo": FieldType(
+            IsValidator(Geo),
+            BuildF
+        ),
         "correct": FieldType(
             BoolValidator,
             BoolF()
@@ -42,12 +47,12 @@ class Search(PApi):
     }
 
 
-    FIELDS = ('q', 'filter', 'facet', 'start', 'num', 'sort', 'fields', 'group', 'correct')
+    FIELDS = ('q', 'filter', 'facet', 'start', 'num', 'sort', 'fields', 'group', 'geo', 'correct')
     REQUIRED = ('q',)
 
     def __init__(self, q="", start=None, num=None, filter=None, 
                        facets=None, sort=None, fields=None, correct=None,
-                       group=None):
+                       group=None, geo=None):
         self.q = q
         self.start = start
         self.num = num
@@ -56,6 +61,7 @@ class Search(PApi):
         self.sort = sort
         self.fields = fields
         self.group = group
+        self.geo = geo
         self.correct = correct
 
     def process_results(self, raw):

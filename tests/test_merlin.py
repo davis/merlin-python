@@ -6,6 +6,7 @@ from merlin.facet import Facet as F
 from merlin.filter import Field, NF
 from merlin.sort import Sort as S
 from merlin.search import Search
+from merlin.geo import Geo
 from merlin.group import Group
 
 class MerlinTest(unittest.TestCase):
@@ -24,76 +25,76 @@ class MerlinTest(unittest.TestCase):
 
     def test_enum_facet(self):
         s = Search(
-            q = "shirt", 
+            q = "shirt",
             facets = F.enum("brand", num=10)
         )
-        self.assertEquals(s.build(), 
+        self.assertEquals(s.build(),
             "search?q=shirt&facet=" + enc("field=brand/type=enum/num=10")
         )
 
     def test_enum_facet_named(self):
         s = Search(
-            q = "shirt", 
+            q = "shirt",
             facets = F.enum("brand", num=10, key='ponies')
         )
-        self.assertEquals(s.build(), 
+        self.assertEquals(s.build(),
             "search?q=shirt&facet=" + enc("field=brand/type=enum/key=ponies/num=10")
         )
 
     def test_enum_facet_excluding(self):
         s = Search(
-            q = "shirt", 
+            q = "shirt",
             facets = F.enum("brand", num=10, key='ponies', exclude=['foo', 'bar'])
         )
-        self.assertEquals(s.build(), 
-            "search?q=shirt&facet=" + 
+        self.assertEquals(s.build(),
+            "search?q=shirt&facet=" +
             enc("field=brand/type=enum/key=ponies/num=10/ex=foo,bar")
         )
 
     def test_hist_facet(self):
         s = Search(
-            q = "shirt", 
+            q = "shirt",
             facets = F.hist("price", start=10, end=100, gap=5, key='prices')
         )
-        self.assertEquals(s.build(), 
-            "search?q=shirt&facet=" + 
+        self.assertEquals(s.build(),
+            "search?q=shirt&facet=" +
             enc("field=price/type=hist/key=prices/range=[10:100:5]")
         )
 
     def test_range_facet(self):
         s = Search(
-            q = "shirt", 
+            q = "shirt",
             facets = F.range("price", key='prices')
         )
-        self.assertEquals(s.build(), 
-            "search?q=shirt&facet=" + 
+        self.assertEquals(s.build(),
+            "search?q=shirt&facet=" +
             enc("field=price/type=range/key=prices")
         )
 
     def test_multiple_facets(self):
         s = Search(
-            q = "shirt", 
+            q = "shirt",
             facets = [
                 F.enum('brand', num=10, key='top_brands'),
                 F.hist('price', start=0, end=100, gap=10)
             ]
         )
-        self.assertEquals(s.build(), 
-            "search?q=shirt" + 
+        self.assertEquals(s.build(),
+            "search?q=shirt" +
             '&facet=' + enc("field=brand/type=enum/key=top_brands/num=10") +
             '&facet=' + enc("field=price/type=hist/range=[0:100:10]")
         )
 
     def test_sorting(self):
         s = Search(
-            q = "pants", 
+            q = "pants",
             sort = [
                 S.desc('brand'),
                 S.asc('price')
             ]
         )
-        self.assertEquals(s.build(), 
-            "search?q=pants" + 
+        self.assertEquals(s.build(),
+            "search?q=pants" +
             '&sort=' + enc("brand:desc,price:asc")
         )
 
@@ -102,8 +103,8 @@ class MerlinTest(unittest.TestCase):
             q = "socks",
             fields=["one", "two", "three"]
         )
-        self.assertEquals(s.build(), 
-            "search?q=socks" + 
+        self.assertEquals(s.build(),
+            "search?q=socks" +
             '&fields=' + enc("one,two,three")
         )
 
@@ -113,8 +114,8 @@ class MerlinTest(unittest.TestCase):
                 (Field('Color') == 'Red') & (Field('Color') != 'Blue')
             )
         )
-        self.assertEquals(s.build(), 
-            "search?q=" + 
+        self.assertEquals(s.build(),
+            "search?q=" +
             '&filter=' + enc(r"exp=Color:Red,Color:!Blue/type=cnf")
         )
 
@@ -125,8 +126,8 @@ class MerlinTest(unittest.TestCase):
                 tag="redandblue"
             )
         )
-        self.assertEquals(s.build(), 
-            "search?q=" + 
+        self.assertEquals(s.build(),
+            "search?q=" +
             '&filter=' + enc(r"exp=Color:Red,Color:!Blue/type=cnf/tag=redandblue")
         )
 
@@ -141,8 +142,8 @@ class MerlinTest(unittest.TestCase):
                 )
             ]
         )
-        self.assertEquals(s.build(), 
-            "search?q=" + 
+        self.assertEquals(s.build(),
+            "search?q=" +
             '&filter=' + enc(r"exp=Color:Red,Color:!Blue/type=cnf") +
             '&filter=' + enc(r"exp=Price:[0:100]/type=dnf")
         )
@@ -164,8 +165,8 @@ class MerlinTest(unittest.TestCase):
             q='hoodie',
             filter=NF.cnf(Field('price') <= 20)
         )
-        self.assertEquals(s.build(), 
-            "search?q=hoodie" + 
+        self.assertEquals(s.build(),
+            "search?q=hoodie" +
             '&filter=' + enc(r"exp=price:[:20]/type=cnf")
         )
 
@@ -176,8 +177,8 @@ class MerlinTest(unittest.TestCase):
                 (Field('price') < 20) & (Field('age') > 10)
             )
         )
-        self.assertEquals(s.build(), 
-            "search?q=hoodie" + 
+        self.assertEquals(s.build(),
+            "search?q=hoodie" +
             '&filter=' + enc(r"exp=price:[:20),age:(10:]/type=cnf")
         )
 
@@ -187,9 +188,20 @@ class MerlinTest(unittest.TestCase):
             group=Group(field='category', num=10, sort=S.asc('price'))
         )
 
-        self.assertEquals(s.build(), 
-            "search?q=hoodie" + 
+        self.assertEquals(s.build(),
+            "search?q=hoodie" +
             '&group=' + enc(r"field=category/sort=price:asc/num=10")
+        )
+
+    def test_geo(self):
+        s = Search(
+            q='hoodie',
+            geo=Geo(field='geo', pt=(37.774929, -122.419416), dist=35)
+        )
+
+        self.assertEquals(s.build(),
+            "search?q=hoodie" +
+            '&geo=' + enc(r"field=geo/pt=(37.774929,-122.419416)/d=35.000")
         )
 
     def test_needs_num(self):
@@ -233,18 +245,18 @@ class EngineTest(unittest.TestCase):
                 keys_found.update(h.keys())
 
             self.assertEquals(len(keys_found), 1)
-            self.assert_('images' in keys_found, 
+            self.assert_('images' in keys_found,
                 "field 'images' not in returned results")
 
     def test_price_filter(self):
-        s = Search(q='', 
+        s = Search(q='',
             filter=NF.cnf(Field('price') > 150),
             fields=['price']
         )
         with self.engine(s) as r:
             self.assertEquals(r.hits.numFound, 1)
             self.assertEquals(r.hits[0]['price'], '178.0 USD')
-    
+
     def test_sort(self):
         s = Search(q='',
             sort = S.asc('price'),
