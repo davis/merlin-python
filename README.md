@@ -26,9 +26,13 @@ Alternatively, view the `tests/` directory for lists of commonly used features.
 http://www.blackbird.am/docs will be updated with additional examples.
 
 ## Binaries
-Merlin comes with two executables to make it easy to fire one-offs from the commandline: mcrud.py and a wrapper, murl.py
+
+Merlin comes with two executables to make it easy to fire one-offs from the commandline: 
+- mcrud.py
+- murl.py
 
 ### mcrud.py
+
 mcrud.py allows a user to run four basic operations: add, read, update, and delete.
 
     # Reading example
@@ -54,6 +58,7 @@ mcrud.py can take multiple forms of inputs for add, delete, and update:
     mcrud.py --instance 'company.env.endpoint' add --username "foo@company.com" --authtoken "bar123" --file documents.json --batch-size 500
 
 ### murl.py
+
 murl.py is simply a wrapper around mcrud.py that fills out the above fields from the url in merlin admin:
 
     murl.py 'https://upload-dev.search.blackbird.am/add?instance_name=foo&token=123456789ABCDEF&user=you@company.com&env=dev&company_id=company' --file documents.json
