@@ -2,7 +2,7 @@ import unittest
 from urllib import quote_plus as enc
 
 from merlin import Uploader
-from merlin.upload import Add, Update, Delete
+from merlin.upload import Add, Update, Upsert, Delete
 
 class UploadTest(unittest.TestCase):
     def setUp(self):
@@ -57,6 +57,12 @@ class UploadEngineTest(unittest.TestCase):
         updater = Update()
         updater.update_doc({"id": "123", "title": 'redd dress'})
         with self.uploader(updater) as results:
+            self.assert_(results.success, "Should have worked!")
+
+    def testUpsert(self):
+        upserter = Upsert()
+        upserter.update_doc({"id": "123", "title": 'redd dress'})
+        with self.uploader(upserter) as results:
             self.assert_(results.success, "Should have worked!")
 
 if __name__ == '__main__':

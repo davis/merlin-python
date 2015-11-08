@@ -49,6 +49,9 @@ class Update(IndexOp):
     def __iadd__(self, doc):
         return self.update_doc(doc)
 
+class Upsert(Update):
+    endpoint = 'upsert'
+
 class Delete(IndexOp):
     endpoint = 'delete'
 

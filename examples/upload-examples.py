@@ -1,5 +1,5 @@
 from merlin import Uploader
-from merlin.upload import Add, Update, Delete
+from merlin.upload import Add, Update, Upsert, Delete
 
 # To add documents
 company = "yoursite"
@@ -41,4 +41,11 @@ update = Update()
 update += {"id": "456", "images": ["http://path/to/image.jpg"]}
 
 with engine(update) as results:
+    print(results.msg)
+
+# To add a document, if it doesn't exits or update otherwise, use Upsert
+upsert = Upsert()
+upsert += {"id": "789", "title": "forever 21 skirt", "images": ["http://path/to/image.jpg"]}
+
+with engine(upsert) as results:
     print(results.msg)
