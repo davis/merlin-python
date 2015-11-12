@@ -25,38 +25,41 @@ Alternatively, view the `tests/` directory for lists of commonly used features.
 
 http://www.blackbird.am/docs will be updated with additional examples.
 
-# mcrud.py
+## Binaries
 
-Merlin python comes with an easy to use tool for running CRUD operations on your search index: mcrud.py
+Merlin comes with two executables to make it easy to fire one-offs from the commandline: 
+- mcrud.py
+- murl.py
 
-Command-line options can be viewed by add -h:
+### mcrud.py
 
-    mcrud.py -h
-    mcrud.py add -h
-    mcrud.py update -h
-    mcrud.py delete -h
-    mcrud.py read -h
+mcrud.py allows a user to run four basic operations: add, read, update, and delete.
 
-### READ
+    # Reading example
+    mcrud.py --instance 'company.env.endpoint' read --docs '{"id": 123}'
 
-    # Reads two documents from a provided instance's products table
-    # No extra credentials are required
-    mcrud.py --instance company.env.inst read --doc-ids f346904e7dcd43c521bff2e6dcfae21a c05ef333b5dbd9f31123a65221762395 --fields 'title,url,id'
+    # Data modifications require credentials to use
+    mcrud.py --instance 'company.env.endpoint' delete --username "foo@company.com" --authtoken "bar123" --doc-ids 123 456 789
 
-### ADD, UPDATE, or DELETE
-All data modifying actions require the use of authentication credentials:
+mcrud.py can take multiple forms of inputs for add, delete, and update:
 
-    # Deleting
-    mcrud.py --instance company.env.inst delete --username 'username@company.com' --authtoken 'authtoken' --doc-ids f346904e7dcd43c521bff2e6
+    # Documents specified on the commandline
+    mcrud.py --instance 'company.env.endpoint' add --username "foo@company.com" --authtoken "bar123" --json-docs '{"id": "123", "title": "test!"}' '{"id": "456", "title": "test two!"}'
 
-Documents can be entered three ways:
-    
-    # Inline
-    mcrud.py --instance company.env.inst update --username 'username@company.com' --authtoken 'authtoken' --json-docs '{"id": 123, "title": "red skirt"}'
+    # Documents specified froma file or stdin.  Documents are line delimited
+    mcrud.py --instance 'company.env.endpoint' update --username "foo@company.com" --authtoken "bar123" --file documents.json
 
-    # From a file, with each line having a different json document
-    mcrud.py --instance company.env.inst add --username 'username@company.com' --authtoken 'authtoken' --file new-products.json
+    # To read from stdin, use '-' for the filename
+    cat documents.json | mcrud.py --instance 'company.env.endpoint' update --username "foo@company.com" --authtoken "bar123" --file -
 
-    # From stdin, using '-' as the filename
-    head -n 30 update-products.json | mcrud.py --instance company.env.inst add --username 'username@company.com' --authtoken 'authtoken' --file -
+    # Adding large numbers of documents are automatically batched uploaded by 1000.
+    # However, if the document size is large, it can be adjusted with the 
+    # --batch-size parameter
+    mcrud.py --instance 'company.env.endpoint' add --username "foo@company.com" --authtoken "bar123" --file documents.json --batch-size 500
+
+### murl.py
+
+murl.py is simply a wrapper around mcrud.py that fills out the above fields from the url in merlin admin:
+
+    murl.py 'https://upload-dev.search.blackbird.am/add?instance_name=foo&token=123456789ABCDEF&user=you@company.com&env=dev&company_id=company' --file documents.json
 

@@ -6,6 +6,7 @@ from merlin.facet import Facet as F
 from merlin.filter import Field, NF
 from merlin.sort import Sort as S
 from merlin.search import Search
+from merlin.geo import Geo
 from merlin.group import Group
 
 class MerlinTest(unittest.TestCase):
@@ -24,7 +25,7 @@ class MerlinTest(unittest.TestCase):
 
     def test_enum_facet(self):
         s = Search(
-            q = "shirt", 
+            q = "shirt",
             facets = F.enum("brand", num=10)
         )
         self.assertEquals(s.build(), 
@@ -33,7 +34,7 @@ class MerlinTest(unittest.TestCase):
 
     def test_enum_facet_named(self):
         s = Search(
-            q = "shirt", 
+            q = "shirt",
             facets = F.enum("brand", num=10, key='ponies')
         )
         self.assertEquals(s.build(), 
@@ -42,7 +43,7 @@ class MerlinTest(unittest.TestCase):
 
     def test_enum_facet_excluding(self):
         s = Search(
-            q = "shirt", 
+            q = "shirt",
             facets = F.enum("brand", num=10, key='ponies', exclude=['foo', 'bar'])
         )
         self.assertEquals(s.build(), 
@@ -52,7 +53,7 @@ class MerlinTest(unittest.TestCase):
 
     def test_hist_facet(self):
         s = Search(
-            q = "shirt", 
+            q = "shirt",
             facets = F.hist("price", start=10, end=100, gap=5, key='prices')
         )
         self.assertEquals(s.build(), 
@@ -62,7 +63,7 @@ class MerlinTest(unittest.TestCase):
 
     def test_range_facet(self):
         s = Search(
-            q = "shirt", 
+            q = "shirt",
             facets = F.range("price", key='prices')
         )
         self.assertEquals(s.build(), 
@@ -72,7 +73,7 @@ class MerlinTest(unittest.TestCase):
 
     def test_multiple_facets(self):
         s = Search(
-            q = "shirt", 
+            q = "shirt",
             facets = [
                 F.enum('brand', num=10, key='top_brands'),
                 F.hist('price', start=0, end=100, gap=10)
@@ -86,7 +87,7 @@ class MerlinTest(unittest.TestCase):
 
     def test_sorting(self):
         s = Search(
-            q = "pants", 
+            q = "pants",
             sort = [
                 S.desc('brand'),
                 S.asc('price')
@@ -192,6 +193,17 @@ class MerlinTest(unittest.TestCase):
             '&group=' + enc(r"field=category/sort=price:asc/num=10")
         )
 
+    def test_geo(self):
+        s = Search(
+            q='hoodie',
+            geo=Geo(field='geo', pt=(37.774929, -122.419416), dist=35)
+        )
+
+        self.assertEquals(s.build(),
+            "products/search?q=hoodie" +
+            '&geo=' + enc(r"field=geo/pt=(37.774929,-122.419416)/d=35.000")
+        )
+
     def test_needs_num(self):
         with self.assertRaises(AssertionError):
             Field('price') <= '10'
@@ -233,18 +245,18 @@ class EngineTest(unittest.TestCase):
                 keys_found.update(h.keys())
 
             self.assertEquals(len(keys_found), 1)
-            self.assert_('images' in keys_found, 
+            self.assert_('images' in keys_found,
                 "field 'images' not in returned results")
 
     def test_price_filter(self):
-        s = Search(q='', 
+        s = Search(q='',
             filter=NF.cnf(Field('price') > 150),
             fields=['price']
         )
         with self.engine(s) as r:
             self.assertEquals(r.hits.numFound, 1)
             self.assertEquals(r.hits[0]['price'], '178.0 USD')
-    
+
     def test_sort(self):
         s = Search(q='',
             sort = S.asc('price'),

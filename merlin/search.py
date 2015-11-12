@@ -1,17 +1,17 @@
 import json
 from urllib import urlencode
-from urlparse import urljoin
 from collections import OrderedDict
 
 from .error import MerlinException
-from .common import Builder, Api
+from .common import Builder, PApi
 from .utils import *
 from .sort import SortField
 from .filter import NF
+from .geo import Geo
 from .group import Group
 
 OneOrNValidator = lambda v: ForAllValidator(v) | v
-class Search(Api):
+class Search(PApi):
     PREFIX = "search"
     FIELD_TYPES = {
         "start": FieldType(PosIntValidator, IdentityF),
@@ -35,12 +35,24 @@ class Search(Api):
         "group": FieldType(
             IsValidator(Group),
             BuildF
+        ),
+        "geo": FieldType(
+            IsValidator(Geo),
+            BuildF
+        ),
+        "correct": FieldType(
+            BoolValidator,
+            BoolF()
         )
     }
 
+
+    FIELDS = ('q', 'filter', 'facet', 'start', 'num', 'sort', 'fields', 'group', 'geo', 'correct')
+    REQUIRED = ('q',)
+
     def __init__(self, q="", start=None, num=None, filter=None, 
-                       facets=None, sort=None, fields=None, correct=True,
-                       group=None, index="products"):
+                       facets=None, sort=None, fields=None, correct=None,
+                       group=None, geo=None, index="products"):
         self.q = q
         self.start = start
         self.num = num
@@ -49,37 +61,20 @@ class Search(Api):
         self.sort = sort
         self.fields = fields
         self.group = group
+        self.geo = geo
         self.correct = correct
         self.index = index
-
-    def build(self):
-        params = OrderedDict(q=self.q)
-
-        # Sigh
-        for k in ('filter', 'facet', 'start', 'num', 'sort', 'fields', 'group'):
-            v = getattr(self, k)
-            if v is not None:
-                ft = self.FIELD_TYPES.get(k)
-                if ft is not None:
-                    ft.validate(v)
-                    v = ft.format(v)
-
-                params[k] = v
-
-        if not self.correct:
-            params['correct'] = 'false'
-
-        root =  "%s/%s" % (self.index, self.PREFIX)
-        return urljoin(root, "?%s" % urlencode(params, True))
+        self.PREFIX = '%s/%s' % (self.index, self.PREFIX)
 
     def process_results(self, raw):
         return SearchResults.parse(raw)
         
 class SearchResults(object):
 
-    def __init__(self, q, num, start, hits, facets, cq, raw):
+    def __init__(self, q, qid, num, start, hits, facets, cq, raw):
         self.raw = raw
         self.q = q
+        self.qid = qid
         self.num = num
         self.start = start
         self.hits = hits
@@ -109,7 +104,8 @@ class SearchResults(object):
         hits = Hits(results['numfound'], results['hits'])
         facets = Facets(results['facets'])
         cq = results.get('cq')
-        return cls(data['q'], data['num'], data['start'], hits, facets, cq, data)
+        return cls(data['q'], data['qid'], data['num'], 
+                data['start'], hits, facets, cq, data)
 
     def __unicode__(self):
         return u"SearchResults(q='%s', numFound=%s)" % (self.q, self.hits.numFound)
