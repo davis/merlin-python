@@ -28,11 +28,12 @@ class Vrec(PApi):
     REQUIRED = ('id',)
     FIELDS   = ('id', 'num', 'filter', 'fields')
 
-    def __init__(self, id, num=None, filter=None, fields=None):
+    def __init__(self, id, num=None, filter=None, fields=None, index='products'):
         self.id = id
         self.num = num
         self.filter = filter
         self.fields = fields
+        self.index = index
 
     def process_results(self, raw):
         return VrecResults.parse(raw)

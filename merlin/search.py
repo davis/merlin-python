@@ -64,7 +64,6 @@ class Search(PApi):
         self.geo = geo
         self.correct = correct
         self.index = index
-        self.PREFIX = '%s/%s' % (self.index, self.PREFIX)
 
     def process_results(self, raw):
         return SearchResults.parse(raw)

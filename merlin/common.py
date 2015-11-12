@@ -40,7 +40,8 @@ class PApi(Api):
             if fn not in params:
                 raise AttributeError("Missing field %s" % fn)
 
-        return urlparse.urljoin(self.PREFIX, "?%s" % urlencode(params, True))
+        root = '%s/%s' % (self.index, self.PREFIX)
+        return urlparse.urljoin(root, "?%s" % urlencode(params, True))
 
 class Engine(object):
     
