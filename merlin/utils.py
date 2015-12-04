@@ -135,6 +135,11 @@ PosIntValidator = LambdaValidator(
         "needs to be a positive integer"
 )
 
+SetValidator = lambda *xs: LambdaValidator(
+        (lambda xss: lambda v: v in xss)(set(xs)),
+        "Not a member of %s" % ', '.join(xs)
+)
+
 RegexValidator = lambda r: (lambda rx: LambdaValidator(
         lambda v: isinstance(v, int) or rx.match(v) is not None,
         "Field does not match the correct specification"

@@ -2,6 +2,7 @@ import unittest
 from urllib import quote_plus as enc
 
 from merlin import Merlin
+from merlin.error import ValidationError
 from merlin.facet import Facet as F
 from merlin.filter import Field, NF
 from merlin.sort import Sort as S
@@ -203,6 +204,18 @@ class MerlinTest(unittest.TestCase):
             "products/search?q=hoodie" +
             '&geo=' + enc(r"field=geo/pt=(37.774929,-122.419416)/d=35.000")
         )
+
+    def test_mode(self):
+        make_s = lambda m: Search(q='hoodie', mode=m)
+        for m in ('semantic', 'keyword'):
+            self.assertEquals(make_s(m).build(),
+                "products/search?q=hoodie" +
+                '&mode=' + enc(m)
+            )
+
+        with self.assertRaises(ValidationError):
+            make_s('foo').build()
+            self.fail("Should have failed!")
 
     def test_needs_num(self):
         with self.assertRaises(AssertionError):
