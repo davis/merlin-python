@@ -44,7 +44,7 @@ class Search(PApi):
             BoolValidator,
             BoolF()
         ),
-        "type": FieldType(
+        "mode": FieldType(
             SetValidator('semantic', 'keyword'),
             IdentityF
         )
@@ -52,12 +52,12 @@ class Search(PApi):
 
 
     FIELDS = ('q', 'filter', 'facet', 'start', 'num', 
-              'sort', 'fields', 'group', 'geo', 'correct', 'type')
+              'sort', 'fields', 'group', 'geo', 'correct', 'mode')
     REQUIRED = ('q',)
 
     def __init__(self, q="", start=None, num=None, filter=None, 
                        facets=None, sort=None, fields=None, correct=None,
-                       group=None, geo=None, type=None, index="products"):
+                       group=None, geo=None, mode=None, index="products"):
         self.q = q
         self.start = start
         self.num = num
@@ -67,7 +67,7 @@ class Search(PApi):
         self.fields = fields
         self.group = group
         self.geo = geo
-        self.type = type
+        self.mode = mode
         self.correct = correct
         self.index = index
 
