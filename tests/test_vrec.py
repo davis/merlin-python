@@ -52,10 +52,9 @@ class EngineTest(unittest.TestCase):
         doc_id = '111f49eacc7dbc9ab2df53f8ce52ec64'
         s = Vrec(id=doc_id)
         with self.engine(s) as r:
-            self.assertEquals(r.hits.numFound, 2)
+            self.assertEquals(r.hits.numFound, 0)
             self.assertEquals(r.doc['id'], doc_id)
-            self.assertEquals(r.hits[0]['id'], 'c05ef333b5dbd9f31123a65221762395')
-            self.assertEquals(r.hits[1]['id'], 'a873aa71028568e76d473f9f4ecf770e')
+            self.assertEquals(len(r.hits), 0)
     
 if __name__ == '__main__':
     unittest.main()
