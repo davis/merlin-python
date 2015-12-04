@@ -63,4 +63,3 @@ murl.py is simply a wrapper around mcrud.py that fills out the above fields from
 
     murl.py 'https://upload-dev.search.blackbird.am/add?instance_name=foo&token=123456789ABCDEF&user=you@company.com&env=dev&company_id=company' --file documents.json
 
-

@@ -9,11 +9,11 @@ class VrecTest(unittest.TestCase):
 
     def test_simple_vrec(self):
         s = Vrec(id="a1234")
-        self.assertEquals(s.build(), "vrec?id=a1234")
+        self.assertEquals(s.build(), "products/vrec?id=a1234")
 
     def test_simple_vrec_1(self):
         s = Vrec(id="a1234", num=10)
-        self.assertEquals(s.build(), "vrec?id=a1234&num=10")
+        self.assertEquals(s.build(), "products/vrec?id=a1234&num=10")
 
     def test_fields(self):
         s = Vrec(
@@ -21,7 +21,7 @@ class VrecTest(unittest.TestCase):
             fields=["one", "two", "three"]
         )
         self.assertEquals(s.build(), 
-            "vrec?id=asdf235" + 
+            "products/vrec?id=asdf235" + 
             '&fields=' + enc("one,two,three")
         )
 
@@ -38,7 +38,7 @@ class VrecTest(unittest.TestCase):
             ]
         )
         self.assertEquals(s.build(), 
-            "vrec?id=abcd1234" + 
+            "products/vrec?id=abcd1234" + 
             '&filter=' + enc(r"exp=Color:Red,Color:!Blue/type=cnf") +
             '&filter=' + enc(r"exp=Price:[0:100]/type=dnf")
         )

@@ -5,12 +5,13 @@ UploadResults = namedtuple('UpResults', 'msg,status,success')
 
 class IndexOp(object):
     endpoint = None
-    def __init__(self, index='subjects'):
+    def __init__(self, index='products'):
         self.index = index
         self.docs = []
 
     def build_json(self):
-        return json.dumps({self.index: [{"data": self.docs}]})
+        raw = json.dumps({"subjects": [{"data": self.docs, "name": self.index}]})
+        return raw
     
     @staticmethod
     def process_results(raw):
@@ -44,7 +45,7 @@ class Update(IndexOp):
 
     def update_docs(self, it):
         for i in it:
-            self.delete_doc(doc)
+            self.update_doc(doc)
 
     def __iadd__(self, doc):
         return self.update_doc(doc)

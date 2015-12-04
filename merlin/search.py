@@ -52,7 +52,7 @@ class Search(PApi):
 
     def __init__(self, q="", start=None, num=None, filter=None, 
                        facets=None, sort=None, fields=None, correct=None,
-                       group=None, geo=None):
+                       group=None, geo=None, index="products"):
         self.q = q
         self.start = start
         self.num = num
@@ -63,6 +63,7 @@ class Search(PApi):
         self.group = group
         self.geo = geo
         self.correct = correct
+        self.index = index
 
     def process_results(self, raw):
         return SearchResults.parse(raw)
