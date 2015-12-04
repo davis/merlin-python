@@ -45,7 +45,7 @@ class Update(IndexOp):
 
     def update_docs(self, it):
         for i in it:
-            self.delete_doc(doc)
+            self.update_doc(doc)
 
     def __iadd__(self, doc):
         return self.update_doc(doc)
