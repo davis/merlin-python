@@ -37,7 +37,7 @@ class DelimF(Formatter):
 
     def __call__(self, vs):
         if not isinstance(vs, (list, tuple)):
-            vs = [v]
+            vs = [vs]
 
         return self.delim.join(unicode(v) for v in vs)
 
