@@ -11,6 +11,9 @@ Or, in a virtualenv:
 - `source /path/to/venv/bin/activate`
 - `python setup.py install`
 
+# Pip Installation
+    pip install 'git+https://github.com/blackbirdtech/merlin-python.git'
+
 # Testing / Contributing
 
 1. Run tests using `python setup.py test`
