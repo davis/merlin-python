@@ -125,7 +125,7 @@ class FilterSet(Builder):
     def __unicode__(self):
         if self.op in ('<=', '<'):
             value = self.value.stop
-        elif self.op ('>=', '>'):
+        elif self.op in ('>=', '>'):
             value = self.value.start
         elif self.op == 'in':
             value = '[%s:%s]' % (self.value.start, self.value.stop)
