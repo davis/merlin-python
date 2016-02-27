@@ -24,7 +24,7 @@ class Environment(object):
 # Standard defaults
 HOSTS = {
     "prod":  "search-prod.search.blackbird.am",
-    "stage": "search-staging.search.blackbird.am",
+    "staging": "search-staging.search.blackbird.am",
     "dev":   "search-dev.search.blackbird.am"
 }
 
@@ -52,7 +52,7 @@ class Merlin(Environment):
 
 UPLOAD_HOSTS = {
     "prod":  "upload-prod.search.blackbird.am",
-    "stage": "upload-staging.search.blackbird.am",
+    "staging": "upload-staging.search.blackbird.am",
     "dev":   "upload-dev.search.blackbird.am"
 }
 class Uploader(Environment):
