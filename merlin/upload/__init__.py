@@ -28,8 +28,8 @@ class Add(IndexOp):
         self.docs.append(doc)
         return self
 
-    def add_docs(self, it):
-        for i in it:
+    def add_docs(self, docs):
+        for doc in docs:
             self.add_doc(doc)
 
     def __iadd__(self, doc):
@@ -43,8 +43,8 @@ class Update(IndexOp):
         self.docs.append(doc)
         return self
 
-    def update_docs(self, it):
-        for i in it:
+    def update_docs(self, docs):
+        for doc in docs:
             self.update_doc(doc)
 
     def __iadd__(self, doc):
@@ -65,8 +65,8 @@ class Delete(IndexOp):
 
         return self
 
-    def delete_docs(self, it):
-        for i in it:
+    def delete_docs(self, docs):
+        for doc in docs:
             self.delete_doc(doc)
 
     def __iadd__(self, doc):
